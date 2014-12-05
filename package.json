@@ -1,0 +1,24 @@
+{
+  "name": "bgpat_oop",
+  "version": "1.0.0",
+  "description": "Object-Oriented-Programming Utilities for Javascript",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "nodejs test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bgpat/oop.js.git"
+  },
+  "keywords": [
+    "oop"
+  ],
+  "author": "bgpat",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bgpat/oop.js/issues"
+  }
+}
