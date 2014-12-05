@@ -1,13 +1,13 @@
 {
   "name": "bgpat_oop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Object-Oriented-Programming Utilities for Javascript",
   "main": "index.js",
   "directories": {
     "doc": "doc"
   },
   "scripts": {
-    "test": "nodejs test.js"
+    "test": "nodejs ./test.js"
   },
   "repository": {
     "type": "git",

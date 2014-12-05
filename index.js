@@ -3,7 +3,7 @@
  *
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0, 2014-12-03
+ * @version 1.0.1, 2014-12-06
  */
 
 /** @namespace */
@@ -24,7 +24,7 @@ var oop = {
   /**
    * define member variables
    * @param {Object} obj target object
-   * @param {Object} members member list
+   * @param {...Object} members member list
    * @example oop.member(Foo.prototype, {
    *    foo: 'foo is public member',
    *    _bar: '_bar is private member',
@@ -38,12 +38,13 @@ var oop = {
         writable: true,
       });
     }
+    recurse(arguments);
   },
 
   /**
    * define properties
    * @param {Object} obj target object
-   * @param {Object.<oop.Property>} properties property list
+   * @param {...Object.<oop.Property>} properties property list
    * @example oop.property(Foo.prototype, {
    *    foo: {
    *      get: function () { return 'foo is public property'; },
@@ -62,12 +63,13 @@ var oop = {
         set: properties[name].set,
       });
     }
+    recurse(arguments);
   },
 
   /**
    * define methods
    * @param {Object} obj target object
-   * @param {Object.<Function>} methods method list
+   * @param {...Object.<Function>} methods method list
    * @example oop.method(Foo.prototype, {
    *    foo: function () { return 'foo is a public method'; },
    *    _bar: function () { return 'bar is a private method'; },
@@ -80,6 +82,7 @@ var oop = {
         value: methods[name],
       });
     }
+    recurse(arguments);
   },
 
   /**
@@ -88,6 +91,14 @@ var oop = {
    * @property {Function} [set] setter
    */
 };
+
+function recurse (args) {
+  list = Array.prototype.slice.call(args);
+  if (list.length > 2) {
+    list.splice(1, 1);
+    args.callee.apply(null, list);
+  }
+}
 
 module.exports = oop;
 

@@ -3,7 +3,7 @@
  *
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0, 2014-12-03
+ * @version 1.0.1, 2014-12-06
  */
 
 var oop = require('./index.js');
@@ -16,6 +16,8 @@ oop.extend(Hoge, Fuga);
 oop.member(Hoge.prototype, {
   hoge: 'hoge',
   _hoge: '_hoge',
+}, {
+  hogehoge: 'hogehoge',
 });
 
 oop.property(Fuga.prototype, {
