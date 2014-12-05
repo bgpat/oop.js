@@ -3,7 +3,7 @@
  *
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0.1, 2014-12-06
+ * @version 1.0.2, 2014-12-06
  */
 
 /** @namespace */
@@ -81,6 +81,19 @@ var oop = {
         enumerable: name.charAt(0) !== '_',
         value: methods[name],
       });
+    }
+    recurse(arguments);
+  },
+
+  /**
+   * mixin object
+   * @param {Object} target target object
+   * @param {...Object} list object list
+   * @example oop.mixin(foo, {bar: 'bar'});
+   */
+  mixin: function (target, list) {
+    for (var name in list) {
+      target[name] = list[name];
     }
     recurse(arguments);
   },

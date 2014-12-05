@@ -3,7 +3,7 @@
  *
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0.1, 2014-12-06
+ * @version 1.0.2, 2014-12-06
  */
 
 var oop = require('./index.js');
@@ -23,6 +23,7 @@ oop.member(Hoge.prototype, {
 oop.property(Fuga.prototype, {
   fuga: {
     get: function () { return 'fuga'; },
+    set: function (value) { console.log('"fuga" is "' + value + '"'); },
   },
   _fuga: {
     get: function () { return '_fuga'; },
@@ -39,6 +40,11 @@ oop.method(Hoge.prototype, {
 });
 
 var hoge = new Hoge();
+
+oop.mixin(hoge, {
+  fuga: 'fugafuga',
+});
+
 for (var key in hoge) {
   console.log(key, hoge[key]);
 }
