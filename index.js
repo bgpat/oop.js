@@ -3,7 +3,7 @@
  *
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0.2, 2014-12-06
+ * @version 1.0.4, 2014-12-09
  */
 
 /** @namespace */
@@ -16,8 +16,13 @@ var oop = {
    */
   extend: function (child, parent) {
     child.prototype = Object.create(
-      parent.prototype,
-      { constructor: { value: child } }
+      parent.prototype, {
+        constructor: { value: child },
+        member: { value: instance(oop.member) },
+        property: { value: instance(oop.property) },
+        method: { value: instance(oop.method) },
+        mixin: { value: instance(oop.minxin) },
+      }
     );
   },
 
@@ -104,6 +109,13 @@ var oop = {
    * @property {Function} [set] setter
    */
 };
+
+function instance (func) {
+  return function () {
+    var args = [this].concat(Array.prototype.slice.call(arguments, 0));
+    return func.apply(null, args);
+  };
+}
 
 function recurse (args) {
   list = Array.prototype.slice.call(args);

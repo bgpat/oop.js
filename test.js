@@ -3,12 +3,16 @@
  *
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0.2, 2014-12-06
+ * @version 1.0.4, 2014-12-09
  */
 
 var oop = require('./index.js');
 
-var Hoge = function () {};
+var Hoge = function () {
+  this.member({
+    mem: 'const'
+  });
+};
 var Fuga = function () {};
 
 oop.extend(Hoge, Fuga);
