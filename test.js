@@ -3,7 +3,7 @@
  *
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0.4, 2014-12-09
+ * @version 1.0.5, 2014-12-12
  */
 
 var oop = require('./index.js');
