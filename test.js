@@ -1,12 +1,16 @@
-var oop = require('./index.js');
+var oop = require('./oop.js');
 
 var Hoge = function () {
   this.member({
     mem: 'const'
   });
 };
-var Fuga = function () {};
+var Fuga = function () {
+  this.member({ inst: 100 });
+  console.dir(this);
+};
 
+oop.extend(Fuga);
 oop.extend(Hoge, Fuga);
 
 oop.member(Hoge.prototype, {
@@ -35,6 +39,7 @@ oop.method(Hoge.prototype, {
   },
 });
 
+var fuga = new Fuga();
 var hoge = new Hoge();
 
 oop.mixin(hoge, {

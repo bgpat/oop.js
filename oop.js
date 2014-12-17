@@ -3,7 +3,7 @@
  *
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0.6, 2014-12-14
+ * @version 1.0.8, 2014-12-17
  */
 
 function instance (func) {
@@ -30,6 +30,9 @@ var oop = {
    * @example oop.extend(ChildClass, ParentClass);
    */
   extend: function (child, parent) {
+    if (parent == null) {
+      parent = function () {};
+    }
     child.prototype = Object.create(
       parent.prototype, {
         constructor: { value: child },
