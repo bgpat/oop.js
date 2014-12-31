@@ -1,144 +1,90 @@
 /**
- * @file Object Oriented Programming Library for Javascript
- *
+ * @file オブジェクト指向プログラミング用ユーティリティ
  * @author bgpat <bgpat@bgpat.net>
  * @license MIT
- * @version 1.0.8, 2014-12-17
+ * @version 1.1.0, 2014-12-31
  */
 
-function instance (func) {
-  return function () {
-    var args = [this].concat(Array.prototype.slice.call(arguments, 0));
-    return func.apply(null, args);
+/* (argumentsなどを)配列に変換する */
+function toArray (obj, from, to) {
+  return Array.prototype.slice.call(obj, from, to);
+}
+
+/**
+ * extendを呼び出したときに継承されるクラス
+ * @class
+ */
+var OOP = function () {
+  var mixin = this.mixin;
+  this.mixin = function () {
+    var args = toArray(arguments);
+    var dest = args.shift() || {};
+    mixin.apply(dest, args);
+    return dest;
   };
-}
-
-function recurse (args) {
-  var list = Array.prototype.slice.call(args);
-  if (list.length > 2) {
-    list.splice(1, 1);
-    args.callee.apply(null, list);
-  }
-}
-
-/** @namespace */
-var oop = {
-  /**
-   * inherit super class
-   * @param {function()} child sub class
-   * @param {function()} parent super class
-   * @example oop.extend(ChildClass, ParentClass);
-   */
-  extend: function (child, parent) {
-    if (parent == null) {
-      parent = function () {};
-    }
-    child.prototype = Object.create(
-      parent.prototype, {
-        constructor: { value: child },
-        member: {
-          value: instance(oop.member),
-          writable: true
-        },
-        property: {
-          value: instance(oop.property),
-          writable: true
-        },
-        method: {
-          value: instance(oop.method),
-          writable: true
-        },
-        mixin: {
-          value: instance(oop.minxin),
-          writable: true
-        }
-      }
-    );
-  },
-
-  /**
-   * define member variables
-   * @param {Object} obj target object
-   * @param {...Object} members member list
-   * @example oop.member(Foo.prototype, {
-   *    foo: 'foo is public member',
-   *    _bar: '_bar is private member'
-   *  });
-   */
-  member: function (obj, members) {
-    for (var name in members) {
-      Object.defineProperty(obj, name, {
-        enumerable: name.charAt(0) !== '_',
-        value: members[name],
-        writable: true
-      });
-    }
-    recurse(arguments);
-  },
-
-  /**
-   * define properties
-   * @param {Object} obj target object
-   * @param {...Object.<oop.Property>} properties property list
-   * @example oop.property(Foo.prototype, {
-   *    foo: {
-   *      get: function () { return 'foo is public property'; },
-   *      set: function (value) { this._foo = value; }
-   *    },
-   *    _bar: {
-   *      get: function () { return '_bar is private and readonly property'
-   *    }
-   *  });
-   */
-  property: function (obj, properties) {
-    for (var name in properties) {
-      Object.defineProperty(obj, name, {
-        enumerable: name.charAt(0) !== '_',
-        get: properties[name].get,
-        set: properties[name].set
-      });
-    }
-    recurse(arguments);
-  },
-
-  /**
-   * define methods
-   * @param {Object} obj target object
-   * @param {...Object.<function()>} methods method list
-   * @example oop.method(Foo.prototype, {
-   *    foo: function () { return 'foo is a public method'; },
-   *    _bar: function () { return 'bar is a private method'; }
-   *  });
-   */
-  method: function (obj, methods) {
-    for (var name in methods) {
-      Object.defineProperty(obj, name, {
-        enumerable: name.charAt(0) !== '_',
-        value: methods[name]
-      });
-    }
-    recurse(arguments);
-  },
-
-  /**
-   * mixin object
-   * @param {Object} target target object
-   * @param {...Object} list object list
-   * @example oop.mixin(foo, { bar: 'bar' });
-   */
-  mixin: function (target, list) {
-    for (var name in list) {
-      target[name] = list[name];
-    }
-    recurse(arguments);
-  }
-
-  /**
-   * @typedef {Object.<function()>} oop.Property
-   * @property {function()} [get] getter
-   * @property {function()} [set] setter
-   */
 };
 
-module.exports = oop;
+/**
+ * プロトタイプを指定したクラスに継承させる<br>
+ * メンバーが未定義の場合はextend/propertyのstaticメソッドを追加する
+ * @param {Function()} child 継承先クラス
+ * @param {Function()} [parent=this.constructor] 継承元クラス
+ */
+OOP.prototype.extend = function (child, parent) {
+  if (arguments.length <= 1) {
+    parent = this.constructor;
+  }
+  child.prototype = Object.create(parent.prototype, {
+    constructor: { value: child }
+  });
+  if (typeof child.extend === 'undefined') {
+    child.extend = OOP.prototype.extend.bind(new child());
+  }
+  if (typeof child.property === 'undefined') {
+    child.property = OOP.prototype.property.bind(child.prototype);
+  }
+};
+
+/**
+ * 引数に指定されたオブジェクトをthisにマージする
+ * @param {object} [obj...] マージするオブジェクト
+ */
+OOP.prototype.mixin = function () {
+  var args = toArray(arguments);
+  var obj = args.shift();
+  for (var i in obj) {
+    this[i] = obj[i];
+  }
+  if (args.length > 0) {
+    arguments.callee.apply(this, args);
+  }
+};
+
+/**
+ * プロパティを設定する
+ * <ul>
+ * <li>_から始まるプロパティ: protected</li>
+ * <li>get/setから始まるプロパティ: getter/setter</li>
+ * </ul>
+ * @param {object} props ハッシュ形式で設定するプロパティを指定
+ */
+OOP.prototype.property = function (props) {
+  var desc = {};
+  for (var i in props) {
+    var m = i.match(/^(_)?(?:([gs]et)([A-Z]))?(.*)$/);
+    var name = (m[3] || '').toLowerCase() + m[4];
+    if (!m[2]) {
+      desc[name] = {
+        enumerable: true,
+        writable: !m[1]
+      };
+    } else {
+      desc[name] = {};
+    }
+    desc[name][m[2] || 'value'] = props[i];
+  }
+  Object.defineProperties(this, desc);
+};
+
+module.exports = new OOP();
 
